@@ -2,7 +2,8 @@
 
 [ext_resource path="res://Ship.tscn" type="PackedScene" id=1]
 
-[node name="Node2D" type="Node2D"]
+[node name="World" type="Node2D"]
 
 [node name="Ship" parent="." instance=ExtResource( 1 )]
-position = Vector2( 475, 231 )
+unique_name_in_owner = true
+position = Vector2( 264, 317 )

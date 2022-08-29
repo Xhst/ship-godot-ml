@@ -7,9 +7,33 @@ namespace ShipML
 {
     public class Ship : RigidBody2D
     {
+        public float RightForce
+        {
+            get => _rightForce;
+            set => _rightForce = value;
+        }
+
+        public float LeftForce
+        {
+            get => _leftForce;
+            set => _leftForce = value;
+        }
+
+        public float RightThrusterAngle
+        {
+            get => _rightThruster.Rotation;
+            set => _rightThruster.Rotation = value;
+        }
+        
+        public float LeftThrusterAngle
+        {
+            get => _leftThruster.Rotation;
+            set => _leftThruster.Rotation = value;
+        }
+
         private float _rightForce = 49f;
         private float _leftForce = 49f;
-        
+
         private Node2D _rightThruster;
         private Node2D _leftThruster;
 
@@ -17,6 +41,8 @@ namespace ShipML
         {
             _rightThruster = GetNode<Node2D>("%ThrusterR");
             _leftThruster = GetNode<Node2D>("%ThrusterL");
+
+            GetNode<ShipNeuralNetwork>("/root/ShipNeuralNetwork").Ship = this;
         }
 
         public override void _PhysicsProcess(float delta)
