@@ -7,7 +7,7 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace ShipML
 {
-    public class ShipNeuralNetwork : Node
+    public class ShipNeuralNetwork
     {
         private const float MaxForce = 1f;
         private const float MaxAngle = (float) Math.PI / 2;
@@ -20,24 +20,18 @@ namespace ShipML
         private Vector<float> _input = Vector<float>.Build.Dense(InputLayerSize);
         private Vector<float> _output = Vector<float>.Build.Dense(OutputLayerSize);
 
-        private NeuralNetwork _network;
-        
-        private Ship _ship;
-        public Ship Ship
-        {
-            set
-            {
-                _ship = value;
-                SetInputFromShip();
-            }
-        }
+        private readonly NeuralNetwork _network;
+        private readonly Ship _ship;
 
-        public override void _Ready()
+        public ShipNeuralNetwork(Ship ship)
         {
+            _ship = ship;
             _network = new NeuralNetwork(InputLayerSize, FirstLayerSize, SecondLayerSize, OutputLayerSize);
+            
+            SetInputFromShip();
         }
 
-        public override void _PhysicsProcess(float delta)
+        public void FeedForward()
         {
             if (_ship is null) return;
 
@@ -48,8 +42,8 @@ namespace ShipML
 
         private void SetInputFromShip()
         {
-            _input[0] = 512 - _ship.Position.x;
-            _input[1] = 300 - _ship.Position.y;
+            _input[0] = _ship.NextTargetPosition.x - _ship.Position.x;
+            _input[1] = _ship.NextTargetPosition.y - _ship.Position.y;
             _input[2] = _ship.LinearVelocity.x;
             _input[3] = _ship.LinearVelocity.y;
             _input[4] = (float) Math.Cos(_ship.GlobalRotation);

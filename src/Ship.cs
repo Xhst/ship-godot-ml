@@ -9,25 +9,21 @@ namespace ShipML
     {
         public float RightForce
         {
-            get => _rightForce;
             set => _rightForce = value;
         }
 
         public float LeftForce
         {
-            get => _leftForce;
             set => _leftForce = value;
         }
 
         public float RightThrusterAngle
         {
-            get => _rightThruster.Rotation;
             set => _rightThruster.Rotation = value;
         }
         
         public float LeftThrusterAngle
         {
-            get => _leftThruster.Rotation;
             set => _leftThruster.Rotation = value;
         }
 
@@ -37,16 +33,32 @@ namespace ShipML
         private Node2D _rightThruster;
         private Node2D _leftThruster;
 
+        private ShipNeuralNetwork _shipNeuralNetwork;
+
+        public Vector2 NextTargetPosition;
+        public int NextTargetId = 0;
+        public int LastTargetId;
+
+        public float DurationTime = 0f;
+
+        [Signal]
+        public delegate void ShipDestroyed();
+
+        [Signal]
+        public delegate void AllTargetReached();
+        
+
         public override void _Ready()
         {
             _rightThruster = GetNode<Node2D>("%ThrusterR");
             _leftThruster = GetNode<Node2D>("%ThrusterL");
-
-            GetNode<ShipNeuralNetwork>("/root/ShipNeuralNetwork").Ship = this;
+            _shipNeuralNetwork = new ShipNeuralNetwork(this);
         }
 
         public override void _PhysicsProcess(float delta)
         {
+            _shipNeuralNetwork.FeedForward();
+            
             AppliedForce = Vector2.Zero;
             AppliedTorque = 0f;
 
@@ -62,6 +74,21 @@ namespace ShipML
             
             AddForce(_rightThruster.Position, rightForceVector);
             AddForce(_leftThruster.Position, leftForceVector);
+
+            StatusCheck();
+        }
+
+        private void StatusCheck()
+        {
+            if (Position.x > 1200 || Position.x < -100 || Position.y > 650 || Position.y < -100)
+            {
+                EmitSignal(nameof(ShipDestroyed), this);
+            }
+
+            if (NextTargetId > LastTargetId)
+            {
+                EmitSignal(nameof(AllTargetReached));
+            }
         }
     }
 }

@@ -1,9 +1,10 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://Ship.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/World.cs" type="Script" id=2]
+[ext_resource path="res://Target.tscn" type="PackedScene" id=3]
 
 [node name="World" type="Node2D"]
-
-[node name="Ship" parent="." instance=ExtResource( 1 )]
-unique_name_in_owner = true
-position = Vector2( 264, 317 )
+script = ExtResource( 2 )
+_shipScene = ExtResource( 1 )
+_targetScene = ExtResource( 3 )
